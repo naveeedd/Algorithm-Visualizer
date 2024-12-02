@@ -2,6 +2,20 @@ import { KaratsubaStep } from '../types';
 
 export function karatsubaAlgorithm(num1: number, num2: number): KaratsubaStep[] {
   const steps: KaratsubaStep[] = [];
+  const sign = Math.sign(num1) * Math.sign(num2); // Determine the overall sign
+
+  // Check if both numbers are single-digit
+  if (Math.abs(num1) < 10 && Math.abs(num2) < 10) {
+    const result = num1 * num2;
+    steps.push({
+      level: 0,
+      num1,
+      num2,
+      result,
+      message: `Simple multiplication for single-digit numbers: ${num1} × ${num2} = ${result}`
+    });
+    return steps;
+  }
 
   function karatsuba(x: number, y: number, level: number): number {
     steps.push({
@@ -12,15 +26,19 @@ export function karatsubaAlgorithm(num1: number, num2: number): KaratsubaStep[] 
       message: `Starting multiplication of ${x} and ${y}`
     });
 
+    x = Math.abs(x); // Work with absolute values
+    y = Math.abs(y);
+
     if (x < 10 || y < 10) {
+      const result = x * y;
       steps.push({
         level,
         num1: x,
         num2: y,
-        result: x * y,
-        message: `Base case: ${x} × ${y} = ${x * y}`
+        result,
+        message: `Base case: ${x} × ${y} = ${result}`
       });
-      return x * y;
+      return result;
     }
 
     const n = Math.max(x.toString().length, y.toString().length);
@@ -68,6 +86,14 @@ export function karatsubaAlgorithm(num1: number, num2: number): KaratsubaStep[] 
     return result;
   }
 
-  karatsuba(num1, num2, 0);
+  const result = sign * karatsuba(num1, num2, 0); // Apply the sign to the final result
+  steps.push({
+    level: 0,
+    num1,
+    num2,
+    result,
+    message: `Final result after applying sign: ${result}`
+  });
+
   return steps;
 }

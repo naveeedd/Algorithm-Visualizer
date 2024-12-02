@@ -10,13 +10,25 @@ const KaratsubaVisualizer: React.FC<Props> = ({ numbers }) => {
   const [currentPair, setCurrentPair] = useState(0);
   const totalPairs = Math.floor(numbers.length / 2);
 
+  // Check if all numbers are single-digit (absolute value < 10)
+  const areAllSingleDigit = numbers.every(num => Math.abs(num) < 10);
+
+  // Calculate the final result using simple multiplication or Karatsuba
   const finalResult = useMemo(() => {
-    let result = numbers[0];
-    for (let i = 1; i < numbers.length; i++) {
-      result *= numbers[i];
+    if (areAllSingleDigit) {
+      // If all numbers are single-digit, perform simple multiplication
+      return numbers.reduce((acc, num) => acc * num, 1);
+    } else {
+      // If not, perform the Karatsuba algorithm logic
+      let result = Math.abs(numbers[0]);
+      let sign = Math.sign(numbers[0]);
+      for (let i = 1; i < numbers.length; i++) {
+        result *= Math.abs(numbers[i]);
+        sign *= Math.sign(numbers[i]);
+      }
+      return sign * result; // Apply the sign to the final result
     }
-    return result;
-  }, [numbers]);
+  }, [numbers, areAllSingleDigit]);
 
   const handlePrevPair = () => {
     setCurrentPair(prev => Math.max(0, prev - 1));
@@ -26,8 +38,8 @@ const KaratsubaVisualizer: React.FC<Props> = ({ numbers }) => {
     setCurrentPair(prev => Math.min(totalPairs - 1, prev + 1));
   };
 
-  const num1 = numbers[currentPair * 2];
-  const num2 = numbers[currentPair * 2 + 1];
+  const num1 = Math.abs(numbers[currentPair * 2]); // Use absolute value
+  const num2 = Math.abs(numbers[currentPair * 2 + 1]); // Use absolute value
 
   return (
     <div className="space-y-6">
@@ -38,7 +50,9 @@ const KaratsubaVisualizer: React.FC<Props> = ({ numbers }) => {
           <p className="font-mono text-3xl break-all">{finalResult.toLocaleString()}</p>
         </div>
         <div className="mt-4 text-sm">
-          <p className="opacity-75">Input numbers: {numbers.join(' × ')}</p>
+          <p className="opacity-75">
+            Input numbers: {numbers.map(n => n.toLocaleString()).join(' × ')}
+          </p>
         </div>
       </div>
 
@@ -62,12 +76,15 @@ const KaratsubaVisualizer: React.FC<Props> = ({ numbers }) => {
         </button>
       </div>
 
-      <KaratsubaStep
-        num1={num1}
-        num2={num2}
-        step={currentPair + 1}
-        totalSteps={totalPairs}
-      />
+      {/* Only show Karatsuba steps if numbers are not all single-digit */}
+      {!areAllSingleDigit && (
+        <KaratsubaStep
+          num1={num1} // Pass absolute values
+          num2={num2} // Pass absolute values
+          step={currentPair + 1}
+          totalSteps={totalPairs}
+        />
+      )}
     </div>
   );
 };
