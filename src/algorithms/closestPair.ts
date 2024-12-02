@@ -3,12 +3,15 @@ import { Point, AlgorithmStep } from '../types';
 export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
   const steps: AlgorithmStep[] = [];
 
-  // Helper to calculate Euclidean distance
+  // Helper to calculate Euclidean distance between two points
+  // Time Complexity: O(1) since it involves constant number of operations
   function euclideanDistance(p1: Point, p2: Point): number {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
   }
 
-  // Check for special cases
+  // Check for special cases like insufficient points, duplicate points,
+  // or points lying on the same axis (X or Y).
+  // Time Complexity: O(n) where n is the number of points
   if (points.length < 3) {
     steps.push({
       type: 'error',
@@ -44,7 +47,8 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     });
   }
 
-  // Brute force for small cases
+  // Brute force approach to find closest pair when points are 3 or fewer
+  // Time Complexity: O(n^2), where n is the number of points
   function bruteForce(points: Point[]): [number, [Point, Point]] {
     let minDist = Infinity;
     let closestPair: [Point, Point] = [points[0], points[1]];
@@ -69,7 +73,8 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return [minDist, closestPair];
   }
 
-  // Sorting helper functions
+  // Merge sort to sort points based on the x and y coordinates
+  // Time Complexity: O(n log n), where n is the number of points
   function mergeSort(points: Point[], compareFn: (a: Point, b: Point) => number): Point[] {
     if (points.length <= 1) return points;
 
@@ -80,6 +85,8 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return merge(left, right, compareFn);
   }
 
+  // Merge helper for mergeSort
+  // Time Complexity: O(n), where n is the number of points
   function merge(left: Point[], right: Point[], compareFn: (a: Point, b: Point) => number): Point[] {
     const result: Point[] = [];
     let i = 0, j = 0;
@@ -98,7 +105,8 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return result;
   }
 
-  // Recursive Closest Pair Algorithm
+  // Recursive divide-and-conquer approach to find closest pair
+  // Time Complexity: O(n log n), where n is the number of points
   function recursiveClosestPair(px: Point[], py: Point[]): [number, [Point, Point]] {
     if (px.length <= 3) {
       return bruteForce(px);
@@ -127,6 +135,8 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return closestSplitPair(px, py, delta, bestPair);
   }
 
+  // Function to check the closest pair in the region around the midpoint
+  // Time Complexity: O(n), where n is the number of points
   function closestSplitPair(px: Point[], py: Point[], delta: number, bestPair: [Point, Point]): [number, [Point, Point]] {
     const midX = px[Math.floor(px.length / 2)].x;
     const sy = py.filter(p => p.x >= midX - delta && p.x <= midX + delta);
@@ -160,11 +170,12 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return [minDist, bestPair];
   }
 
-  // Sorting points
+  // Sorting the points based on x and y coordinates
+  // Time Complexity: O(n log n), where n is the number of points
   const px = mergeSort(points, (a, b) => a.x - b.x);
   const py = mergeSort(points, (a, b) => a.y - b.y);
 
-  // Find closest pair
+  // Find the closest pair using divide-and-conquer approach
   const [distance, pair] = recursiveClosestPair(px, py);
 
   steps.push({
