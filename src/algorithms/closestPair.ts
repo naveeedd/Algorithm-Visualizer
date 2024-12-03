@@ -12,7 +12,7 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
   // Check for special cases like insufficient points, duplicate points,
   // or points lying on the same axis (X or Y).
   // Time Complexity: O(n) where n is the number of points
-  if (points.length <= 2) {
+  if (points.length < 2) {
     steps.push({
       type: 'error',
       points: points,
