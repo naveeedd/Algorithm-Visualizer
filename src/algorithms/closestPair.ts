@@ -21,6 +21,19 @@ export function closestPairAlgorithm(points: Point[]): AlgorithmStep[] {
     return steps;
   }
 
+  // If there are exactly two points, directly calculate and return the distance
+  if (points.length === 2) {
+    const distance = euclideanDistance(points[0], points[1]);
+    steps.push({
+      type: 'result',
+      points: points,
+      pair: [points[0], points[1]],
+      distance: distance,
+      message: `Only two points, directly calculated distance: ${distance.toFixed(2)}`
+    });
+    return steps;
+  }
+
   if (new Set(points.map(p => `${p.x},${p.y}`)).size !== points.length) {
     steps.push({
       type: 'error',
